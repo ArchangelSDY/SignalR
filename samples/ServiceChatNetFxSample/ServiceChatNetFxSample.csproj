@@ -344,6 +344,10 @@
       <Project>{42e76f87-92b6-45ab-bf07-6b811c0f2cac}</Project>
       <Name>Microsoft.AspNetCore.SignalR.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.SignalR.Service.Owin\Microsoft.AspNetCore.SignalR.Service.Owin.csproj">
+      <Project>{5900e0f4-677a-43f2-9061-4f2b3e12909d}</Project>
+      <Name>Microsoft.AspNetCore.SignalR.Service.Owin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.AspNetCore.SignalR.Service\Microsoft.AspNetCore.SignalR.Service.csproj">
       <Project>{1a12f5e6-76f4-43d3-bd22-a00841c7d6d2}</Project>
       <Name>Microsoft.AspNetCore.SignalR.Service</Name>

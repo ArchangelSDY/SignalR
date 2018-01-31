@@ -17,10 +17,4 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsLoggingPackageVersion)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Owin">
-      <HintPath>C:\Users\kevinzha\.nuget\packages\owin\1.0.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

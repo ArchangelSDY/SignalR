@@ -161,10 +161,10 @@ namespace Microsoft.AspNetCore.SignalR
                     .AddSingleton(typeof(HubServer<>))
                     .BuildServiceProvider());
 
-        internal static IServiceProvider ServiceProvider
+        public static IServiceProvider ServiceProvider
         {
             get => _externalServiceProvider ?? InternalServiceProvider.Value;
-            set => _externalServiceProvider = value;
+            internal set => _externalServiceProvider = value;
         }
 
         #endregion
