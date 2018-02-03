@@ -31,6 +31,13 @@ textarea:focus {
     background: #87CEFA;
 }
 
+.broadcast-message {
+    display: inline-block;
+    background: yellow;
+    margin: auto;
+    padding: 5px 10px;
+}
+
 .message-entry {
     overflow: auto;
     margin: 8px 0;

@@ -9,7 +9,7 @@ namespace ServiceChatNetFxSample
     public class SignalRAuthController : Controller
     {
         public static SignalR SignalRInstance = 
-            SignalR.Parse(ConfigurationManager.AppSettings["SignalRService:ConnectionString"]);
+            SignalR.Parse(ConfigurationManager.AppSettings["SignalRServiceConnectionString"]);
 
         // GET signalr-auth/chat
         [Route("{hubName}")]

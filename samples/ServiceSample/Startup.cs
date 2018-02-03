@@ -37,7 +37,7 @@ namespace ServiceSample
                     Configuration["Auth:JWT:IssuerSigningKey"],
                     Configuration["Auth:JWT:IssuerSigningKey2"]
                 };
-            });
+            }).AddRedis(Configuration["Redis:ConnectionString"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
