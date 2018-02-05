@@ -40,10 +40,10 @@ namespace Microsoft.AspNetCore.SignalR
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHubProtocol, CustomMessagePackHubProtocol>());
             services.AddSingleton(typeof(IHubInvoker<ClientHub>), typeof(ClientHubInvoker));
             services.AddSingleton(typeof(IHubInvoker<ServerHub>), typeof(ServerHubInvoker));
-            services.AddSingleton(typeof(IHubLifetimeManagerFactory), typeof(DefaultHubLifetimeManagerFactory));
+            services.AddSingleton(typeof(IHubLifetimeManagerFactory), typeof(HubLifetimeManagerFactory));
             services.AddSingleton(typeof(IHubMessageBroker), typeof(HubMessageBroker));
             services.AddSingleton(typeof(IHubConnectionRouter), typeof(HubConnectionRouter));
-            services.AddSingleton(typeof(IRoutingCache), typeof(DefaultRoutingCache));
+            services.AddSingleton(typeof(IRoutingCache), typeof(DistributedRoutingCache));
             services.AddSingleton(typeof(IHubStatusManager), typeof(DefaultHubStatusManager));
 
             services.AddAuthorization();

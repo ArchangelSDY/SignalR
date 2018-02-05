@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.SignalR.Internal.Protocol;
 
 namespace Microsoft.AspNetCore.SignalR
 {
-    public class ServiceHubLifetimeManager<THub> : HubLifetimeManager<THub>
+    public class ServiceHubLifetimeManager<THub> : ExHubLifetimeManager<THub>
     {
         private readonly string _hubName;
         private readonly HubConnectionList _connections = new HubConnectionList();
@@ -189,7 +189,17 @@ namespace Microsoft.AspNetCore.SignalR
             return InvokeAllWhere(methodName, args, connection => userIds.Contains(connection.UserIdentifier));
         }
 
-        public Task InvokeConnectionAsync(string connectionId, HubInvocationMessage message)
+        public override Task InvokeConnectionAsync(string connectionId, HubMethodInvocationMessage message)
+        {
+            return InternalInvokeConnectionAsync(connectionId, message);
+        }
+
+        public override Task InvokeConnectionAsync(string connectionId, CompletionMessage message)
+        {
+            return InternalInvokeConnectionAsync(connectionId, message);
+        }
+
+        private Task InternalInvokeConnectionAsync(string connectionId, HubInvocationMessage message)
         {
             CheckNullConnectionId(connectionId);
 

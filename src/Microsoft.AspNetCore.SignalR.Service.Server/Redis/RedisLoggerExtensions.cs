@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
-namespace Microsoft.AspNetCore.SignalR.Redis.Internal
+namespace Microsoft.AspNetCore.SignalR.Redis
 {
     internal static class RedisLoggerExtensions
     {

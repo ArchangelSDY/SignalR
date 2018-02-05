@@ -5,6 +5,6 @@ namespace Microsoft.AspNetCore.SignalR
 {
     public interface IHubLifetimeManagerFactory
     {
-        HubLifetimeManager<THub> Create<THub>(string hubName) where THub : Hub;
+        ExHubLifetimeManager<THub> Create<THub>(string hubName) where THub : Hub;
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.SignalR
 {
-    public class DefaultRoutingCache : IRoutingCache
+    public class DistributedRoutingCache : IRoutingCache
     {
         // TODO: enable user to configure retension period
         private static readonly DistributedCacheEntryOptions ExpireIn30Min = new DistributedCacheEntryOptions
@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.SignalR
 
         private readonly ServerOptions _options;
 
-        public DefaultRoutingCache(IDistributedCache cache, IOptions<ServerOptions> options)
+        public DistributedRoutingCache(IDistributedCache cache, IOptions<ServerOptions> options)
         {
             _cache = cache;
             _options = options.Value;
@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.SignalR
         public bool TryGetTarget(HubConnectionContext connection, out RouteTarget target)
         {
             var targetValue = _options.EnableStickySession && connection.TryGetUid(out var uid)
-                ? _cache.GetString(uid)
+                ? _cache.GetString($"{_options.ServiceId}:{uid}")
                 : null;
             target = RouteTarget.FromString(targetValue);
             return target != null;
@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.SignalR
         {
             if (_options.EnableStickySession && connection.TryGetUid(out var uid))
             {
-                await _cache.SetStringAsync(uid, target.ToString());
+                await _cache.SetStringAsync($"{_options.ServiceId}:{uid}", target.ToString());
             }
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.SignalR
         {
             if (_options.EnableStickySession && connection.TryGetUid(out var uid))
             {
-                await _cache.RemoveAsync(uid);
+                await _cache.RemoveAsync($"{_options.ServiceId}:{uid}");
             }
         }
 
@@ -55,7 +55,7 @@ namespace Microsoft.AspNetCore.SignalR
         {
             if (_options.EnableStickySession && connection.TryGetUid(out var uid))
             {
-                await _cache.SetStringAsync(uid, target.ToString(), ExpireIn30Min);
+                await _cache.SetStringAsync($"{_options.ServiceId}:{uid}", target.ToString(), ExpireIn30Min);
             }
         }
     }

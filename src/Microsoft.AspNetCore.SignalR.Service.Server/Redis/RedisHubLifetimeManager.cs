@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Internal.Protocol;
-using Microsoft.AspNetCore.SignalR.Redis.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -18,7 +17,7 @@ using StackExchange.Redis;
 
 namespace Microsoft.AspNetCore.SignalR.Redis
 {
-    public class RedisHubLifetimeManager<THub> : HubLifetimeManager<THub>, IDisposable
+    public class RedisHubLifetimeManager<THub> : ExHubLifetimeManager<THub>, IDisposable
     {
         private readonly HubConnectionList _connections = new HubConnectionList();
         // TODO: Investigate "memory leak" entries never get removed
@@ -27,7 +26,7 @@ namespace Microsoft.AspNetCore.SignalR.Redis
         private readonly ISubscriber _bus;
         private readonly ILogger _logger;
         private readonly RedisOptions _options;
-        private readonly string _channelNamePrefix = typeof(THub).FullName;
+        private readonly string _channelNamePrefix;
         private readonly string _serverName = Guid.NewGuid().ToString();
         private readonly AckHandler _ackHandler;
         private int _internalId;
@@ -40,14 +39,15 @@ namespace Microsoft.AspNetCore.SignalR.Redis
         };
 
         public RedisHubLifetimeManager(ILogger<RedisHubLifetimeManager<THub>> logger,
-                                       IOptions<RedisOptions> options)
+                                       RedisOptions options, string channelPrefix)
         {
+            _channelNamePrefix = channelPrefix;
             _logger = logger;
-            _options = options.Value;
+            _options = options;
             _ackHandler = new AckHandler();
 
             var writer = new LoggerTextWriter(logger);
-            _logger.ConnectingToEndpoints(options.Value.Options.EndPoints);
+            _logger.ConnectingToEndpoints(_options.Options.EndPoints);
             _redisServerConnection = _options.Connect(writer);
 
             _redisServerConnection.ConnectionRestored += (_, e) =>
@@ -177,6 +177,44 @@ namespace Microsoft.AspNetCore.SignalR.Redis
             }
 
             return PublishAsync(_channelNamePrefix + "." + connectionId, message);
+        }
+
+        public override Task InvokeConnectionAsync(string connectionId, HubMethodInvocationMessage message)
+        {
+            if (connectionId == null)
+            {
+                throw new ArgumentNullException(nameof(connectionId));
+            }
+
+            // If the connection is local we can skip sending the message through the bus since we require sticky connections.
+            // This also saves serializing and deserializing the message!
+            var connection = _connections[connectionId];
+            if (connection != null)
+            {
+                return connection.WriteAsync(message);
+            }
+
+            return PublishAsync(_channelNamePrefix + "." + connectionId,
+                RedisInvocationMessage.FromMethodInvocation(message));
+        }
+
+        public override Task InvokeConnectionAsync(string connectionId, CompletionMessage message)
+        {
+            if (connectionId == null)
+            {
+                throw new ArgumentNullException(nameof(connectionId));
+            }
+
+            // If the connection is local we can skip sending the message through the bus since we require sticky connections.
+            // This also saves serializing and deserializing the message!
+            var connection = _connections[connectionId];
+            if (connection != null)
+            {
+                return connection.WriteAsync(message);
+            }
+
+            // TODO: Implement passing through CompletionMessage thru Redis
+            return Task.CompletedTask;
         }
 
         public override Task InvokeGroupAsync(string groupName, string methodName, object[] args)
@@ -706,6 +744,7 @@ namespace Microsoft.AspNetCore.SignalR.Redis
             public string Target { get; set; }
             public IReadOnlyList<string> ExcludedIds { get; set; }
             public object[] Arguments { get; set; }
+            public IDictionary<string, string> Headers { get; set; }
 
             public RedisInvocationMessage()
             {
@@ -726,6 +765,14 @@ namespace Microsoft.AspNetCore.SignalR.Redis
             public InvocationMessage CreateInvocation()
             {
                 return new InvocationMessage(Target, argumentBindingException: null, arguments: Arguments);
+            }
+
+            public static RedisInvocationMessage FromMethodInvocation(HubMethodInvocationMessage message)
+            {
+                return new RedisInvocationMessage(message.Target, null, message.Arguments)
+                {
+                    Headers = message.Metadata
+                };
             }
         }
     }

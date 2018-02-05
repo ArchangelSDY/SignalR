@@ -29,7 +29,7 @@ namespace ServiceChatSample
             await _hubProxy.All.InvokeAsync("broadcastMessage",
                 new object[]
                 {
-                    "[Current UTC Time]",
+                    "_BROADCAST_",
                     DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
                 });
         }

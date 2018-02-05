@@ -127,6 +127,7 @@
                 // Create a function that the hub can call to broadcast messages.
                 connection.on('broadcastMessage', messageCallback);
                 connection.on('echo', messageCallback);
+                connection.onclose(onConnectionError);
             }
 
             function onConnected(connection) {
@@ -135,7 +136,7 @@
                 document.getElementById('sendmessage').addEventListener('click', function (event) {
                     // Call the broadcastMessage method on the hub.
                     if (messageInput.value) {
-                        connection.invoke('broadcastMessage', username, messageInput.value);
+                        connection.send('broadcastMessage', username, messageInput.value);
                     }
 
                     // Clear text box and reset focus for next comment.
@@ -152,7 +153,7 @@
                 });
                 document.getElementById('echo').addEventListener('click', function (event) {
                     // Call the echo method on the hub.
-                    connection.invoke('echo', username, messageInput.value);
+                    connection.send('echo', username, messageInput.value);
 
                     // Clear text box and reset focus for next comment.
                     messageInput.value = '';
@@ -162,7 +163,7 @@
             }
 
             function onConnectionError(error) {
-                if (error.message) {
+                if (error && error.message) {
                     console.error(error.message);
                 }
                 var modal = document.getElementById('myModal');

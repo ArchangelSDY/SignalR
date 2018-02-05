@@ -8,6 +8,12 @@ namespace ServiceSample
 {
     public class Startup
     {
+        public const string ServiceId = "ServiceId";
+        public const string Audience = "Auth:JWT:Audience";
+        public const string PrimarySigningKey = "Auth:JWT:IssuerSigningKey";
+        public const string SecondarySigningKey = "Auth:JWT:IssuerSigningKey2";
+        public const string RedisConnectionString = "Redis:ConnectionString";
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -25,19 +31,12 @@ namespace ServiceSample
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSignalRServer(configureServer: options =>
+            services.AddSignalRServer(options =>
             {
-                options.AudienceProvider = hubName => new[]
-                {
-                    $"{Configuration["Auth:JWT:Audience"]}/client/?hub={hubName}",
-                    $"{Configuration["Auth:JWT:Audience"]}/server/?hub={hubName}"
-                };
-                options.SigningKeyProvider = () => new[]
-                {
-                    Configuration["Auth:JWT:IssuerSigningKey"],
-                    Configuration["Auth:JWT:IssuerSigningKey2"]
-                };
-            }).AddRedis(Configuration["Redis:ConnectionString"]);
+                ConfigureServiceId(options);
+                ConfigureAudience(options);
+                ConfigureSigningKeys(options);
+            }).AddRedis(Configuration[RedisConnectionString]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,5 +45,37 @@ namespace ServiceSample
             app.UseMvc();
             app.UseSignalRServer();
         }
+
+        #region Private Methods
+
+        private void ConfigureServiceId(ServerOptions options)
+        {
+            if (string.IsNullOrEmpty(Configuration[ServiceId])) return;
+            options.ServiceId = Configuration[ServiceId];
+        }
+
+        private void ConfigureAudience(ServerOptions options)
+        {
+            if (string.IsNullOrEmpty(Configuration[Audience])) return;
+            options.AudienceProvider = hubName => new[]
+            {
+                $"{Configuration[Audience]}/client/?hub={hubName}",
+                $"{Configuration[Audience]}/server/?hub={hubName}",
+            };
+        }
+
+        private void ConfigureSigningKeys(ServerOptions options)
+        {
+            if (string.IsNullOrEmpty(Configuration[PrimarySigningKey]) &&
+                string.IsNullOrEmpty(Configuration[SecondarySigningKey])) return;
+
+            options.SigningKeyProvider = () => new[]
+            {
+                Configuration[PrimarySigningKey],
+                Configuration[SecondarySigningKey]
+            };
+        }
+
+        #endregion
     }
 }

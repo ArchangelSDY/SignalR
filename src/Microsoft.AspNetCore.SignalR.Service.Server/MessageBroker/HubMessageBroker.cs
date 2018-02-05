@@ -15,15 +15,15 @@ namespace Microsoft.AspNetCore.SignalR
         private const string OnDisconnectedMethodName = "OnDisconnectedAsync";
 
         // TODO: cleanup unused HubLifetimeManager to avoid memory leak
-        private readonly ConcurrentDictionary<string, HubLifetimeManager<ClientHub>> _clientHubManagerDict =
-            new ConcurrentDictionary<string, HubLifetimeManager<ClientHub>>();
+        private readonly ConcurrentDictionary<string, ExHubLifetimeManager<ClientHub>> _clientHubManagerDict =
+            new ConcurrentDictionary<string, ExHubLifetimeManager<ClientHub>>();
 
-        private readonly ConcurrentDictionary<string, HubLifetimeManager<ServerHub>> _serverHubManagerDict =
-            new ConcurrentDictionary<string, HubLifetimeManager<ServerHub>>();
+        private readonly ConcurrentDictionary<string, ExHubLifetimeManager<ServerHub>> _serverHubManagerDict =
+            new ConcurrentDictionary<string, ExHubLifetimeManager<ServerHub>>();
 
-        private readonly Dictionary<string, Func<HubLifetimeManager<ClientHub>, HubMethodInvocationMessage, Task>>
+        private readonly Dictionary<string, Func<ExHubLifetimeManager<ClientHub>, HubMethodInvocationMessage, Task>>
             _clientHubActions =
-                new Dictionary<string, Func<HubLifetimeManager<ClientHub>, HubMethodInvocationMessage, Task>>
+                new Dictionary<string, Func<ExHubLifetimeManager<ClientHub>, HubMethodInvocationMessage, Task>>
                 {
                     {"invokeconnectionasync", InvokeConnectionAsync},
                     {"invokeallasync", InvokeAllAsync},
@@ -90,7 +90,7 @@ namespace Microsoft.AspNetCore.SignalR
             {
                 // Add original connection Id to message metadata
                 message.AddConnectionId(connection.ConnectionId);
-                await ((ServiceHubLifetimeManager<ServerHub>) serverHubManager).InvokeConnectionAsync(target.ConnectionId, message);
+                await serverHubManager.InvokeConnectionAsync(target.ConnectionId, message);
             }
         }
 
@@ -134,7 +134,7 @@ namespace Microsoft.AspNetCore.SignalR
             if (message.TryGetConnectionId(out var connectionId) &&
                 _clientHubManagerDict.TryGetValue(hubName, out var clientHubManager))
             {
-                await ((ServiceHubLifetimeManager<ClientHub>) clientHubManager).InvokeConnectionAsync(connectionId, message);
+                await clientHubManager.InvokeConnectionAsync(connectionId, message);
             }
         }
 
@@ -171,7 +171,7 @@ namespace Microsoft.AspNetCore.SignalR
         }
 
         private bool TryGetAction(HubMethodInvocationMessage message,
-            out Func<HubLifetimeManager<ClientHub>, HubMethodInvocationMessage, Task> action)
+            out Func<ExHubLifetimeManager<ClientHub>, HubMethodInvocationMessage, Task> action)
         {
             if (message.TryGetAction(out var actionName) && !string.IsNullOrEmpty(actionName) &&
                 _clientHubActions.TryGetValue(actionName.ToLower(), out action))

@@ -3,9 +3,9 @@
 
 namespace Microsoft.AspNetCore.SignalR
 {
-    public class DefaultHubLifetimeManagerFactory : IHubLifetimeManagerFactory
+    public class HubLifetimeManagerFactory : IHubLifetimeManagerFactory
     {
-        public HubLifetimeManager<THub> Create<THub>(string hubName) where THub : Hub
+        public ExHubLifetimeManager<THub> Create<THub>(string hubName) where THub : Hub
         {
             return new ServiceHubLifetimeManager<THub>(hubName);
         }
