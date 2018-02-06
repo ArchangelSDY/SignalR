@@ -11,5 +11,8 @@ namespace Microsoft.AspNetCore.SignalR
         public abstract Task InvokeConnectionAsync(string connectionId, HubMethodInvocationMessage message);
 
         public abstract Task InvokeConnectionAsync(string connectionId, CompletionMessage message);
+
+        // TODO: extract a separate interface since this method only applies to client-side HubLifetimeManager
+        public abstract Task OnServerDisconnectedAsync(string serverConnectionId);
     }
 }

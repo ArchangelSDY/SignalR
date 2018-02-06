@@ -31,6 +31,8 @@ namespace Microsoft.AspNetCore.SignalR.Redis
         private readonly AckHandler _ackHandler;
         private int _internalId;
 
+        private string OfflineNoticeChannel => $"{_channelNamePrefix}:svc:offline";
+
         // This serializer is ONLY use to transmit the data through redis, it has no connection to the serializer used on each connection.
         private readonly JsonSerializer _serializer = new JsonSerializer
         {
@@ -88,6 +90,7 @@ namespace Microsoft.AspNetCore.SignalR.Redis
             SubscribeToAllExcept();
             SubscribeToInternalGroup();
             SubscribeToInternalServerName();
+            SubscribeToInternalOfflineNotice();
         }
 
         public override Task OnConnectedAsync(HubConnectionContext connection)
@@ -144,6 +147,13 @@ namespace Microsoft.AspNetCore.SignalR.Redis
             }
 
             return Task.WhenAll(tasks);
+        }
+
+        public override Task OnServerDisconnectedAsync(string serverConnectionId)
+        {
+            _logger.LogInformation($"Publish disconnected server connection [{serverConnectionId}] to offline notice channel.");
+            _redisServerConnection.GetDatabase().Publish(OfflineNoticeChannel, serverConnectionId);
+            return Task.CompletedTask;
         }
 
         public override Task InvokeAllAsync(string methodName, object[] args)
@@ -536,6 +546,25 @@ namespace Microsoft.AspNetCore.SignalR.Redis
                 if (groupMessage.Action == GroupAction.Ack)
                 {
                     _ackHandler.TriggerAck(groupMessage.Id);
+                }
+            });
+        }
+
+        private void SubscribeToInternalOfflineNotice()
+        {
+            // Subscribe to channel to receive offline notice
+            _bus.Subscribe(OfflineNoticeChannel, (c, data) =>
+            {
+                _logger.LogInformation($"Received offline connection list: {data}");
+                var inactiveConnections = data.ToString().Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var connection in _connections)
+                {
+                    if (connection.TryGetRouteTarget(out var target) &&
+                        inactiveConnections.Contains(target.ConnectionId))
+                    {
+                        _logger.LogInformation($"Abort connection: {connection.ConnectionId}");
+                        connection.Abort();
+                    }
                 }
             });
         }

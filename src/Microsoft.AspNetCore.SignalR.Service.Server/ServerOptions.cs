@@ -21,7 +21,11 @@ namespace Microsoft.AspNetCore.SignalR
 
         public bool EnableStickySession { get; set; } = false;
 
+        // ServiceId is shared by all the instances behind a single SignalR Service endpoint
         public string ServiceId { get; set; } = Guid.NewGuid().ToString();
+
+        // InstanceId is a unique ID to identify a server/container instance
+        public string InstanceId { get; set; } = Guid.NewGuid().ToString();
     }
 
     internal class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions>

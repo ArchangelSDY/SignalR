@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Internal.Protocol;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.AspNetCore.SignalR
 {
@@ -14,14 +16,16 @@ namespace Microsoft.AspNetCore.SignalR
         private readonly string _hubName;
         private readonly HubConnectionList _connections = new HubConnectionList();
         private readonly HubGroupList _groups = new HubGroupList();
+        private ILogger<ServiceHubLifetimeManager<THub>> _logger;
 
-        public ServiceHubLifetimeManager() : this(string.Empty)
+        public ServiceHubLifetimeManager() : this(string.Empty, null)
         {
         }
 
-        public ServiceHubLifetimeManager(string hubName)
+        public ServiceHubLifetimeManager(string hubName, ILogger<ServiceHubLifetimeManager<THub>> logger)
         {
             _hubName = hubName;
+            _logger = logger ?? NullLogger<ServiceHubLifetimeManager<THub>>.Instance;
         }
 
         public override Task AddGroupAsync(string connectionId, string groupName)
@@ -171,6 +175,22 @@ namespace Microsoft.AspNetCore.SignalR
         {
             _connections.Remove(connection);
             _groups.RemoveDisconnectedConnection(connection.ConnectionId);
+            return Task.CompletedTask;
+        }
+
+        // This method is only applicable to client-side HubLifetimeManager.
+        // It is called when a server-side connection is closed, so all "connected" client connections can be closed accordingly.
+        public override Task OnServerDisconnectedAsync(string serverConnectionId)
+        {
+            foreach (var connection in _connections)
+            {
+                if (!connection.TryGetRouteTarget(out var target) || !string.Equals(serverConnectionId,
+                        target.ConnectionId, StringComparison.InvariantCultureIgnoreCase)) continue;
+
+                _logger.LogInformation(
+                    $"Disconnect client connection [{connection.ConnectionId}] because server connection [{serverConnectionId}] is disconnected.");
+                connection.Abort();
+            }
             return Task.CompletedTask;
         }
 

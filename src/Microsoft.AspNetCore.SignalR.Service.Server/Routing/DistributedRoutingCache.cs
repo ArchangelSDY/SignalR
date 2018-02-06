@@ -29,7 +29,7 @@ namespace Microsoft.AspNetCore.SignalR
         public bool TryGetTarget(HubConnectionContext connection, out RouteTarget target)
         {
             var targetValue = _options.EnableStickySession && connection.TryGetUid(out var uid)
-                ? _cache.GetString($"{_options.ServiceId}:{uid}")
+                ? _cache.GetString(RoutingCacheKey(uid))
                 : null;
             target = RouteTarget.FromString(targetValue);
             return target != null;
@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.SignalR
         {
             if (_options.EnableStickySession && connection.TryGetUid(out var uid))
             {
-                await _cache.SetStringAsync($"{_options.ServiceId}:{uid}", target.ToString());
+                await _cache.SetStringAsync(RoutingCacheKey(uid), target.ToString());
             }
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.SignalR
         {
             if (_options.EnableStickySession && connection.TryGetUid(out var uid))
             {
-                await _cache.RemoveAsync($"{_options.ServiceId}:{uid}");
+                await _cache.RemoveAsync(RoutingCacheKey(uid));
             }
         }
 
@@ -55,8 +55,13 @@ namespace Microsoft.AspNetCore.SignalR
         {
             if (_options.EnableStickySession && connection.TryGetUid(out var uid))
             {
-                await _cache.SetStringAsync($"{_options.ServiceId}:{uid}", target.ToString(), ExpireIn30Min);
+                await _cache.SetStringAsync(RoutingCacheKey(uid), target.ToString(), ExpireIn30Min);
             }
+        }
+
+        private string RoutingCacheKey(string uid)
+        {
+            return $"{_options.ServiceId}:routing:{uid}";
         }
     }
 }

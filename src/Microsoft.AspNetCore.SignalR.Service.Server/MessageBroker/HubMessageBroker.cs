@@ -111,12 +111,18 @@ namespace Microsoft.AspNetCore.SignalR
 
         public async Task OnServerDisconnectedAsync(string hubName, HubConnectionContext context)
         {
+            // Disconnect all clients first
+            if (_clientHubManagerDict.TryGetValue(hubName, out var clientHubManager))
+            {
+                await clientHubManager.OnServerDisconnectedAsync(context.ConnectionId);
+            }
+
             if (_serverHubManagerDict.TryGetValue(hubName, out var serverHubManager))
             {
                 await serverHubManager.OnDisconnectedAsync(context);
             }
+
             _router.OnServerDisconnected(hubName, context);
-            // TODO: Disconnect all client connections routing to this server
         }
 
         public async Task PassThruServerMessage(string hubName, HubConnectionContext context,
