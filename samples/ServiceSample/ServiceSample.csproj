@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.SignalR.Service.Server\Microsoft.AspNetCore.SignalR.Service.Server.csproj" />
+    <ProjectReference Include="..\..\src\Microsoft.Azure.SignalR.Server\Microsoft.Azure.SignalR.Server.csproj" />
   </ItemGroup>
 
 </Project>

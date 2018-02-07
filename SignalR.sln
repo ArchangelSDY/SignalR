@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 15.0.26730.03
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DA69F624-5398-4884-87E4-B816698CDE65}"
 	ProjectSection(SolutionItems) = preProject
@@ -94,9 +94,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Signal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.SignalR.Client.MsgPack", "src\Microsoft.AspNetCore.SignalR.Client.MsgPack\Microsoft.AspNetCore.SignalR.Client.MsgPack.csproj", "{4DBF918E-BD37-4309-B448-BA68C935944D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.SignalR.Service", "src\Microsoft.AspNetCore.SignalR.Service\Microsoft.AspNetCore.SignalR.Service.csproj", "{1A12F5E6-76F4-43D3-BD22-A00841C7D6D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.SignalR", "src\Microsoft.Azure.SignalR\Microsoft.Azure.SignalR.csproj", "{1A12F5E6-76F4-43D3-BD22-A00841C7D6D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.SignalR.Service.Server", "src\Microsoft.AspNetCore.SignalR.Service.Server\Microsoft.AspNetCore.SignalR.Service.Server.csproj", "{C35FD291-D04D-417A-8AFA-4315A5D4E085}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.SignalR.Server", "src\Microsoft.Azure.SignalR.Server\Microsoft.Azure.SignalR.Server.csproj", "{C35FD291-D04D-417A-8AFA-4315A5D4E085}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceSample", "samples\ServiceSample\ServiceSample.csproj", "{C5266EEB-47E9-4282-9FC8-5D614B3E0CFF}"
 EndProject
@@ -104,7 +104,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceChatSample", "sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceChatNetFxSample", "samples\ServiceChatNetFxSample\ServiceChatNetFxSample.csproj", "{6942E504-E784-4F0C-8E86-29BBF70A4DAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AspNetCore.SignalR.Service.Owin", "src\Microsoft.AspNetCore.SignalR.Service.Owin\Microsoft.AspNetCore.SignalR.Service.Owin.csproj", "{5900E0F4-677A-43F2-9061-4F2B3E12909D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.SignalR.Owin", "src\Microsoft.Azure.SignalR.Owin\Microsoft.Azure.SignalR.Owin.csproj", "{5900E0F4-677A-43F2-9061-4F2B3E12909D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

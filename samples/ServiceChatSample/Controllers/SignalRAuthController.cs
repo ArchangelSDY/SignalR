@@ -1,15 +1,16 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 
 namespace ServiceChatSample
 {
     [Route("signalr-auth")]
     public class SignalRAuthController : Controller
     {
-        private readonly SignalR _signalr;
+        private readonly SignalRService _signalr;
 
-        public SignalRAuthController(SignalR signalr)
+        public SignalRAuthController(SignalRService signalr)
         {
             _signalr = signalr;
         }

@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.SignalR.Service\Microsoft.AspNetCore.SignalR.Service.csproj" />
     <ProjectReference Include="..\..\client-ts\Microsoft.AspNetCore.SignalR.Client.TS\Microsoft.AspNetCore.SignalR.Client.TS.csproj" />
+    <ProjectReference Include="..\..\src\Microsoft.Azure.SignalR\Microsoft.Azure.SignalR.csproj" />
   </ItemGroup>
 
   <Target Name="CopyTSClient" BeforeTargets="AfterBuild">

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,10 +25,10 @@ namespace ServiceChatSample
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSignalRService();
+            services.AddAzureSignalR();
 
-            var signalr = SignalR.Parse(Configuration["SignalRService:ConnectionString"]);
-            services.AddSingleton(typeof(SignalR), signalr);
+            var signalr = SignalRService.CreateFromConnectionString(Configuration["SignalRService:ConnectionString"]);
+            services.AddSingleton(typeof(SignalRService), signalr);
 
             var timeService = new TimeService(signalr);
             services.AddSingleton(typeof(TimeService), timeService);
@@ -39,7 +39,7 @@ namespace ServiceChatSample
         {
             app.UseMvc();
             app.UseFileServer();
-            app.UseSignalRService(Configuration["SignalRService:ConnectionString"],
+            app.UseAzureSignalR(Configuration["SignalRService:ConnectionString"],
                 builder => { builder.UseHub<Chat>(); });
         }
     }

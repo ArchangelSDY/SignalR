@@ -1,15 +1,15 @@
 ﻿using System.Configuration;
 using System.Security.Claims;
 using System.Web.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 
 namespace ServiceChatNetFxSample
 {
     [RoutePrefix("signalr-auth")]
     public class SignalRAuthController : Controller
     {
-        public static SignalR SignalRInstance = 
-            SignalR.Parse(ConfigurationManager.AppSettings["SignalRServiceConnectionString"]);
+        public static SignalRService SignalRServiceInstance = 
+            SignalRService.CreateFromConnectionString(ConfigurationManager.AppSettings["SignalRServiceConnectionString"]);
 
         // GET signalr-auth/chat
         [Route("{hubName}")]
@@ -18,8 +18,8 @@ namespace ServiceChatNetFxSample
         {
             var userName = HttpContext.Request.QueryString["uid"];
             return string.IsNullOrEmpty(userName)
-                ? SignalRInstance.GenerateClientToken(hubName)
-                : SignalRInstance.GenerateClientToken(hubName, new[]
+                ? SignalRServiceInstance.GenerateClientToken(hubName)
+                : SignalRServiceInstance.GenerateClientToken(hubName, new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, userName)
                 });

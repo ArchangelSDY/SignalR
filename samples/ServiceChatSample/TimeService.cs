@@ -3,16 +3,17 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 
 namespace ServiceChatSample
 {
     public class TimeService
     {
-        private readonly SignalR _signalr;
+        private readonly SignalRService _signalr;
         private readonly HubProxy _hubProxy;
         private readonly Timer _timer;
 
-        public TimeService(SignalR signalr)
+        public TimeService(SignalRService signalr)
         {
             _signalr = signalr;
             _hubProxy = _signalr.CreateHubProxy<Chat>();
