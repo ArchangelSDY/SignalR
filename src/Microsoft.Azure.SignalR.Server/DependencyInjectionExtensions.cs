@@ -45,7 +45,7 @@ namespace Microsoft.Azure.SignalR
             services.AddSingleton(typeof(IHubMessageBroker), typeof(HubMessageBroker));
             services.AddSingleton(typeof(IHubConnectionRouter), typeof(HubConnectionRouter));
             services.AddSingleton(typeof(IRoutingCache), typeof(DistributedRoutingCache));
-            services.AddSingleton(typeof(IHubStatusManager), typeof(DefaultHubStatusManager));
+            services.AddSingleton(typeof(IHubStatusManager), typeof(HubStatusManager));
 
             services.AddAuthorization();
 

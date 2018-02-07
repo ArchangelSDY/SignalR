@@ -21,6 +21,6 @@ namespace Microsoft.Azure.SignalR
 
         Task AddOperation(bool isError = false);
 
-        string GetHubStatus();
+        object GetHubStatus();
     }
 }

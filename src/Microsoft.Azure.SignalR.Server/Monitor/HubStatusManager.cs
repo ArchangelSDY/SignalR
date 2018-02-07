@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Azure.SignalR
 {
-    public class DefaultHubStatusManager : IHubStatusManager
+    public class HubStatusManager : IHubStatusManager
     {
         private readonly ConcurrentDictionary<string, int> _clientConnections = new ConcurrentDictionary<string, int>();
         private readonly ConcurrentDictionary<string, int> _serverConnections = new ConcurrentDictionary<string, int>();
@@ -70,7 +70,7 @@ namespace Microsoft.Azure.SignalR
             }
         }
 
-        public string GetHubStatus()
+        public object GetHubStatus()
         {
             var clientStats = _clientConnections.Select(x => BuildHubStatus(x, _clientMessages)).ToArray();
             var serverStats = _serverConnections.Select(x => BuildHubStatus(x, _serverMessages)).ToArray();
@@ -85,7 +85,7 @@ namespace Microsoft.Azure.SignalR
                 MessageCount = serverStats.Sum(x => x.MessageCount)
             };
 
-            return JsonConvert.SerializeObject(new
+            return new
             {
                 overall = new
                 {
@@ -96,7 +96,7 @@ namespace Microsoft.Azure.SignalR
                 },
                 client = clientStats,
                 server = serverStats
-            });
+            };
         }
 
         private static HubStatus BuildHubStatus(KeyValuePair<string, int> kvp,
