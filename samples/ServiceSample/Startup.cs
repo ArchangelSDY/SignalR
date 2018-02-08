@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,16 +14,13 @@ namespace ServiceSample
         public const string SecondarySigningKey = "Auth:JWT:IssuerSigningKey2";
         public const string RedisConnectionString = "Redis:ConnectionString";
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IHostingEnvironment env, IConfiguration config)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
+            HostingEnvironment = env;
+            Configuration = config;
         }
+
+        public IHostingEnvironment HostingEnvironment { get; }
 
         public IConfiguration Configuration { get; }
 
