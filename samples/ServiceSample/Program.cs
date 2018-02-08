@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -8,21 +9,23 @@ namespace ServiceSample
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
+            new WebHostBuilder()
                 .UseSetting(WebHostDefaults.PreventHostingStartupKey, "true")
-                .ConfigureLogging((context, factory) =>
-                {
-                    factory.AddConfiguration(context.Configuration.GetSection("Logging"));
-                    factory.AddConsole();
-                    factory.AddDebug();
-                })
+                .ConfigureLogging(LoggingConfig)
                 .UseKestrel()
-                .UseUrls("http://*:5001/")
+                .UseUrls("http://*:5001/", "http://*:5002/")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
+                .Build()
+                .Run();
         }
+
+        private static readonly Action<WebHostBuilderContext, ILoggingBuilder> LoggingConfig =
+            (context, builder) =>
+            {
+                builder.AddConfiguration(context.Configuration.GetSection("Logging"));
+                builder.AddConsole();
+                builder.AddDebug();
+            };
     }
 }

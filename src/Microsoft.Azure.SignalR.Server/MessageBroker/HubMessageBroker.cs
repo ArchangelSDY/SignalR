@@ -151,7 +151,7 @@ namespace Microsoft.Azure.SignalR
 
         public HubLifetimeManager<ClientHub> GetHubLifetimeManager(string hubName)
         {
-            return _clientHubManagerDict.TryGetValue(hubName, out var clientHubManager) ? clientHubManager : null;
+            return GetOrAddClientHubManager(hubName);
         }
 
         #endregion
